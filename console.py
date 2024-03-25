@@ -130,12 +130,12 @@ class HBNBCommand(cmd.Cmd):
         if len(args_list) < 2:
             return
 
-        new_instance = self.classes.get(class_name)()
+        new_instance = HBNBCommand.classes[class_name]()
 
         for arg in args_list[1:]:
-            param = arg.split('=')
-            key = param[0]
-            value = param[1]
+            parameter = arg.split('=')
+            key = parameter[0]
+            value = parameter[1]
 
             if value.startswith('"'):
                 value = value[1:-1]
@@ -148,7 +148,7 @@ class HBNBCommand(cmd.Cmd):
             else:
                 value = int(value)
 
-            new_instance.key = value
+            setattr(new_instance, key, value)
 
         new_instance.save()
         print(new_instance.id)
