@@ -10,7 +10,7 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
-from datetime import datetime
+
 
 
 class HBNBCommand(cmd.Cmd):
@@ -121,35 +121,36 @@ class HBNBCommand(cmd.Cmd):
             return
 
         args_list = args.split()
+        class_name = args_list[0]
 
-        if args_list[0] not in HBNBCommand.classes:
+        if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-
-        if len(args_list) < 2:
-            print("** argument is inferior at two **")
-            return
         
-        kwargs = {}
+        if len(args_list) < 2:
+            return
+
+        new_instance = self.classes.get(class_name)()
 
         for arg in args_list[1:]:
-            key, value = arg.split("=")
+            param = arg.split('=')
+            key = param[0]
+            value = param[1]
 
-        if value.startswith('"'):
-            value = value[1:-1]
-            value = value.replace('"', "\\")
-            value = value.replace("_", " ")
+            if value.startswith('"'):
+                value = value[1:-1]
+                value = value.replace('"', "\\")
+                value = value.replace("_", " ")
 
-        elif '.' in value:
-            value = float(value)
+            elif '.' in value:
+                value = float(value)
 
-        else:
-            value = int(value)
+            else:
+                value = int(value)
 
-        kwargs[key] = value
+            new_instance.key = value
 
-        new_instance = HBNBCommand.classes[args_list[0]](**kwargs)
-        storage.save()
+        new_instance.save()
         print(new_instance.id)
 
     def help_create(self):
