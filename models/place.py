@@ -3,11 +3,12 @@
 from models.base_model import BaseModel
 from models.base_model import Base
 import sqlalchemy
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Table
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from models.city import City
 from models.review import Review
+from models.amenity import Amenity
 
 
 class Place(BaseModel, Base):
@@ -22,9 +23,18 @@ class Place(BaseModel, Base):
     max_guest = Column(Integer, Default=0, nullable=False)
     price_by_night = Column(Integer, Default=0, nullable=False)
     latitude = Column(Float, Default=0, nullable=False)
-    longitude = Column(Float,Default=0, nullable=False)
+    longitude = Column(Float, Default=0, nullable=False)
     amenity_ids = Column(String(60), ForeignKey('cities.id'), nullable=False)
+    place_amenity = Table('place_amenity', Base.metadata,
+                          Column('place_id', String(60),
+                                 ForeignKey('places.id'),
+                                 primary_key=True, nullable=False),
+                          Column('amenity_id', String(60),
+                                 ForeignKey('amenities.id'),
+                                 primary_key=True, nullable=False))
     reviews = relationship("Review", backref="place", cascade="all, delete")
+    amenities = relationship("Amenity", secondary=place_amenity,
+                             viewonly=False)
 
     @property
     def reviews(self):
@@ -35,3 +45,12 @@ class Place(BaseModel, Base):
             if review.place_id == self.id:
                 reviews_list.append(review)
         return reviews_list
+
+    @property
+    def amenities(self):
+        return [amenity_id for amenity_id in self.amenity_ids]
+
+    @amenities.setter
+    def amenities(self, amenity):
+        if isinstance(amenity, Amenity):
+            self.amenity_ids.append(amenity.id)
