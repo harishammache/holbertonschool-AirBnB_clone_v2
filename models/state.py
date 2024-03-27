@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """ State Module for HBNB project """
-import models
 from models.base_model import BaseModel
 from models.base_model import Base
 import sqlalchemy
@@ -10,7 +9,7 @@ from sqlalchemy.orm import relationship
 from models.city import City
 
 
-class State(BaseModel, Base):
+class State(BaseModel):
     """inheritated class State from BaseModel"""
     __tablename__ = "states"
     name = Column(String(128), nullable=False)
