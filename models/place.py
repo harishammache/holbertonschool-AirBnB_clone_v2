@@ -48,9 +48,11 @@ class Place(BaseModel, Base):
 
     @property
     def amenities(self):
+        """Getter attribute that returns the list of Amenity"""
         return [amenity_id for amenity_id in self.amenity_ids]
 
     @amenities.setter
     def amenities(self, amenity):
+        """Setter attribute that handles append method"""
         if isinstance(amenity, Amenity):
             self.amenity_ids.append(amenity.id)
