@@ -40,10 +40,9 @@ class Place(BaseModel, Base):
         @property
         def reviews(self):
             """Getter attribute that returns the list of Review instances"""
-            from models.review import Review
             from models import storage
             reviews_list = []
-            for review in storage.all(Review).values():
+            for review in storage.all('Review').values():
                 if review.place_id == self.id:
                     reviews_list.append(review)
             return reviews_list
@@ -51,7 +50,10 @@ class Place(BaseModel, Base):
         @property
         def amenities(self):
             """Getter attribute that returns the list of Amenity"""
-            return [amenity_id for amenity_id in self.amenity_ids]
+            from models import storage
+            from models.amenity import Amenity
+            return [amenity for amenity in storage.all(Amenity).values()
+                    if amenity.id in self.amenity_ids]
 
         @amenities.setter
         def amenities(self, amenity):
@@ -59,3 +61,5 @@ class Place(BaseModel, Base):
             from models.amenity import Amenity
             if isinstance(amenity, Amenity):
                 self.amenity_ids.append(amenity.id)
+            if not isinstance(amenity, Amenity):
+                return
