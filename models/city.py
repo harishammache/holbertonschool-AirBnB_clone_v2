@@ -2,11 +2,8 @@
 """ City Module for HBNB project """
 from models.base_model import BaseModel
 from models.base_model import Base
-import sqlalchemy
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship
-from models.city import City
 
 
 class City(BaseModel, Base):
