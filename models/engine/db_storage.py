@@ -13,7 +13,6 @@ from os import getenv
 import os
 
 
-
 class DBStorage:
     """Database Storage Manager"""
     __engine = None
@@ -44,12 +43,12 @@ class DBStorage:
             for obj_class in all_classes:
                 for obj in self.__session.query(obj_class).all():
                     objects[f"{obj_class.__name__}.{obj.id}"] = obj
-        
-        else:   
+
+        else:
             for obj in self.__session.query(cls).all():
                 objects[f"{cls.__name__}.{obj.id}"] = obj
 
-        return  objects
+        return objects
 
     def new(self, obj):
         """Add the object to the current database session."""
@@ -61,11 +60,16 @@ class DBStorage:
 
     def delete(self, obj=None):
         """delete from the current database session obj if not None"""
-        if obj != None:
+        if obj is not None:
             self.__session.delete(obj)
 
     def reload(self):
         """create all tables in the database"""
         Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        session_factory = sessionmaker(bind=self.__engine,
+                                       expire_on_commit=False)
         self.__session = scoped_session(session_factory)
+
+    def close(self):
+        """Closes the session"""
+        self.__session.close()
