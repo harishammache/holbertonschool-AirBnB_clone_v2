@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """New engine DBStorage"""
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker, scoped_session
 from models.base_model import Base
 from models.state import State
@@ -9,7 +9,7 @@ from models.city import City
 from models.place import Place
 from models.review import Review
 from models.user import User
-from os import environ
+from os import getenv
 import os
 
 
@@ -21,17 +21,18 @@ class DBStorage:
 
     def __init__(self):
         """Initializing the Database Storage Manager"""
-        mysql_user = environ.get("HBNB_MYSQL_USER")
-        mysql_passwd = environ.get("HBNB_MYSQL_PWD")
-        mysql_host = environ.get("HBNB_MYSQL_HOST", "localhost")
-        mysql_data = environ.get("HBNB_MYSQL_DB")
+        mysql_env = getenv("HBNB_ENV", "none")
+        mysql_user = getenv("HBNB_MYSQL_USER")
+        mysql_passwd = getenv("HBNB_MYSQL_PWD")
+        mysql_host = getenv("HBNB_MYSQL_HOST")
+        mysql_data = getenv("HBNB_MYSQL_DB")
         self.__engine = create_engine(
             f'mysql+mysqldb://\
             {mysql_user}:{mysql_passwd}@{mysql_host}/{mysql_data}',
             pool_pre_ping=True
             )
 
-        if os.environ.get('HBNB_ENV') == 'test':
+        if mysql_env == 'test':
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
