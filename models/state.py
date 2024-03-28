@@ -20,7 +20,7 @@ class State(BaseModel):
     def cities(self):
         """Getter attribute for cities"""
         from models import storage
-        city_instances = storage.all(City)
+        city_instances = storage.all("City")
 
         cities_list = []
         for city in city_instances.values():
