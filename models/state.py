@@ -3,24 +3,29 @@
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
+import os
 
 
 class State(BaseModel, Base):
     """inheritated class State from BaseModel"""
     __tablename__ = "states"
-    name = Column(String(128), nullable=False)
 
-    cities = relationship("City", backref="state", cascade="all, delete")
+    if os.getenv("HBNB_TYPE_STORAGE") == "db":
+        name = Column(String(128), nullable=False)
+        cities = relationship("City", backref="state",
+                              cascade="all, delete-orphan")
+    else:
+        name = ""
 
-    @property
-    def cities(self):
-        """Getter attribute for cities"""
-        from models import storage
-        city_instances = storage.all("City")
+        @property
+        def cities(self):
+            """Getter attribute for cities"""
+            from models import storage
+            city_instances = storage.all("City")
 
-        cities_list = []
-        for city in city_instances.values():
-            if city.state_id == self.id:
-                cities_list.append(city)
+            cities_list = []
+            for city in city_instances.values():
+                if city.state_id == self.id:
+                    cities_list.append(city)
 
-        return cities_list
+            return cities_list
