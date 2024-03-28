@@ -34,24 +34,20 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """"manage dict all cls and entities"""
-        self.__session = scoped_session(sessionmaker(
-            bind=self.__engine, expire_on_commit=False))()
-        obj_dict = {}
-        if cls:
-            objs = self.__session.query(cls).all()
-            for obj in objs:
-                key = f'{type(obj).__name__}.{obj.id}'
-                obj_dict[key] = obj
+        """Query all objects from the database session."""
+        all_classes = [User, State, City, Amenity, Place, Review]
+        objects = {}
+
+        if cls is None:
+            for obj_class in all_classes:
+                for obj in self.__session.query(obj_class).all():
+                    objects[f"{obj_class.__name__}.{obj.id}"] = obj
+
         else:
-            # Import these classes at the top
-            classes = [User, State, City, Amenity, Place, Review]
-            for cls in classes:
-                objs = self.__session.query(cls).all()
-                for obj in objs:
-                    key = f'{cls.__name__}.{obj.id}'
-                    obj_dict[key] = obj
-        return obj_dict
+            for obj in self.__session.query(cls).all():
+                objects[f"{cls.__name__}.{obj.id}"] = obj
+
+        return objects
 
     def new(self, obj):
         """Add the object to the current database session."""
