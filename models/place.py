@@ -29,11 +29,14 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, default=0, nullable=False)
     latitude = Column(Float, default=0, nullable=False)
     longitude = Column(Float, default=0, nullable=False)
-    reviews = relationship("Review", backref="place", cascade="all, delete")
-    amenities = relationship("Amenity", secondary=place_amenity,
-                             viewonly=False)
+    amenity_ids = []
 
-    if os.getenv("HBNB_TYPE_STORAGE") == "fs":
+    if os.getenv("HBNB_TYPE_STORAGE") == "db":
+        reviews = relationship("Review", backref="place",
+                               cascade="all, delete-orphan")
+        amenities = relationship("Amenity", secondary=place_amenity,
+                                 back_populates="place_amenities", viewonly=False)
+    else:
         @property
         def reviews(self):
             """Getter attribute that returns the list of Review instances"""
