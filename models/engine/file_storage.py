@@ -65,3 +65,7 @@ class FileStorage:
                     break
             if key_to_delete is not None:
                 del FileStorage.__objects[key_to_delete]
+
+    def close(self):
+        """deserializing the JSON file to objects"""
+        self.reload()
