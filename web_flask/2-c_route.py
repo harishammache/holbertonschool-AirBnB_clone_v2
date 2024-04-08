@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """starts a Flask web application"""
 from flask import Flask
-from werkzeug.utils import escape
 app = Flask(__name__)
 
 
@@ -20,7 +19,7 @@ def hbnb():
 @app.route('/c/<text>', strict_slashes=False)
 def c(text):
     """display /c/<text>"""
-    return 'C' + escape(text).replace('_', ' ')
+    return 'C' + text.replace('_', ' ')
 
 
 if __name__ == "__main__":
