@@ -6,15 +6,11 @@ from sqlalchemy.orm import relationship
 from os import getenv
 
 
-class City(BaseModel, Base):
-    """This class defines a city by various attributes."""
-    __tablename__ = 'cities'
+class State(BaseModel, Base):
+    __tablename__ = 'states'
 
     name = Column(String(128), nullable=False)
-    state_id = Column(String(60), ForeignKey('states.id'), nullable=False)
-    places = relationship("Place", backref="cities",
-                          cascade="all, delete-orphan")
-    
+
     if getenv('HBNB_TYPE_STORAGE') != 'db':
         @property
         def cities(self):
