@@ -63,3 +63,7 @@ class FileStorage:
         if obj and f"{obj.__class__.__name__}.{obj.id}" in \
                 FileStorage.__objects:
             del FileStorage.__objects[f"{obj.__class__.__name__}.{obj.id}"]
+
+    def close(self):
+        """close method"""
+        self.reload()
