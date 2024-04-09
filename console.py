@@ -10,7 +10,6 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
-from models.engine.db_storage import DBStorage
 
 
 class HBNBCommand(cmd.Cmd):
@@ -30,20 +29,6 @@ class HBNBCommand(cmd.Cmd):
              'max_guest': int, 'price_by_night': int,
              'latitude': float, 'longitude': float
             }
-
-    def num_or_float(self, arg: str):
-        """
-        Method to convert str to int or float
-        """
-        try:
-            return int(arg)
-        except Exception:
-            pass
-
-        try:
-            return float(arg)
-        except Exception:
-            return arg
 
     def preloop(self):
         """Prints if isatty is false"""
@@ -129,27 +114,40 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-        """ Create an object of any class"""
+        """Create an object of any class with optional attributes."""
         if not args:
             print("** class name missing **")
             return
-        args = args.split(' ')
-        className = args[0]
-        if className not in HBNBCommand.classes:
+
+        args_list = args.split(" ")
+        if args_list[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        attributes = {}
-        for attr in args[1:]:
-            newDict = attr.split('=', 1)
-            attributes[newDict[0]] = newDict[1]
-        new_instance = HBNBCommand.classes[className]()
-        for key, value in attributes.items():
-            value = value.strip("\"'").replace("_", " ")
-            value = self.num_or_float(value)
+
+        new_instance = HBNBCommand.classes[args_list[0]]()
+
+        for arg in args_list[1:]:  # Skip the class name
+            key_value = arg.split("=")
+            if len(key_value) == 2:
+                key, value = key_value
+                # Handle strings
+                if value.startswith("\"") and value.endswith("\""):
+                    value = value[1:-1].replace('_', ' ').replace('\\"', '"')
+            # Handle floats and integers
+            else:
+                try:
+                    if '.' in value:
+                        value = float(value)
+                    else:
+                        value = int(value)
+                except ValueError:
+                    # If conversion fails, keep the original value
+                    pass
+            # Set the attribute
             setattr(new_instance, key, value)
 
-        print(new_instance.id)
         new_instance.save()
+        print(new_instance.id)
 
     def help_create(self):
         """ Help information for the create method """
@@ -231,11 +229,12 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage.all(args).items():
-                print_list.append(str(v))
+            objects = storage.all(HBNBCommand.classes[args])
         else:
-            for k, v in storage.all().items():
-                print_list.append(str(v))
+            objects = storage.all()
+
+        for obj in objects.values():
+            print_list.append(str(obj))
 
         print(print_list)
 
