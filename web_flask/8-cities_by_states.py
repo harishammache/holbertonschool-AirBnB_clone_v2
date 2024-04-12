@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 
 @app.teardown_appcontext
-def close(exception):
+def close(self):
     """remove the current SQLAlchemy Session"""
     storage.close()
 
@@ -15,7 +15,7 @@ def close(exception):
 @app.route('/cities_by_states', strict_slashes=False)
 def cities_by_states():
     """display a HTML page"""
-    states = storage.all(State).values()
+    states = storage.all(State)
     return render_template('8-cities_by_states.html', states=states)
 
 
