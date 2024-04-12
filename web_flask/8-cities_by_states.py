@@ -1,7 +1,5 @@
 #!/usr/bin/python3
-"""
-Module for start a web aplication via Flask
-"""
+"""script that starts a Flask web application"""
 from flask import Flask, render_template
 from models import storage
 from models.state import State
@@ -10,13 +8,13 @@ app = Flask(__name__)
 
 @app.teardown_appcontext
 def close(self):
-    """Number_template/<n> page"""
+    """remove the current SQLAlchemy Session"""
     storage.close()
 
 
-@app.route('/cities_by_states', strict_slashes=False)
-def cities_by_states():
-    """Display States"""
+@app.route('/states_list', strict_slashes=False)
+def states_list():
+    """display a HTML page"""
     states = storage.all(State)
     return render_template('8-cities_by_states.html', states=states)
 
